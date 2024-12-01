@@ -24,29 +24,37 @@ fn read_input_day1() -> (Vec<i32>, Vec<i32>) {
 }
 
 fn compute_total_distance(left_locations: &mut Vec<i32>, right_locations: &mut Vec<i32>) -> i32 {
-    let mut total_distance = 0;
-    for it in left_locations.iter().zip(right_locations.iter()) {
-        let (left_value, right_value) = it;
-        let distance: i32 = (left_value - right_value).abs();
-        // println!("{} {} : {}", left_value, right_value, distance);
-        total_distance += distance;
-    }
-    return total_distance;
+    return left_locations
+        .iter()
+        .zip(right_locations.iter())
+        .map(|(l, r)| (l - r).abs())
+        .sum();
 }
 
 // the left and right locations are sorted
 fn compute_similarity_score(left_locations: &Vec<i32>, right_locations: &Vec<i32>) -> i32 {
     let mut score = 0;
-    for left_location in left_locations {
+    let mut previous_left_location: i32 = 0;
+    let mut interm_score = 0;
+    let mut last_right_index = 0;
+    for &left_location in left_locations {
         let mut nb_identical = 0;
-        for right_location in right_locations {
-            if left_location == right_location {
-                nb_identical += 1;
-            } else if left_location < right_location {
-                break;
+        if previous_left_location != left_location {
+            // println!("{}", last_right_index);
+            for (right_index, &right_location) in
+                right_locations.iter().enumerate().skip(last_right_index)
+            {
+                if left_location == right_location {
+                    nb_identical += 1;
+                } else if left_location < right_location {
+                    last_right_index = right_index;
+                    break;
+                }
             }
+            interm_score = left_location * nb_identical;
+            previous_left_location = left_location;
         }
-        score += left_location * nb_identical;
+        score += interm_score;
     }
     return score;
 }
