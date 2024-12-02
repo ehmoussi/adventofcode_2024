@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 
-fn parse_int(location_word: &str) -> i32 {
+pub fn parse_int(location_word: &str) -> i32 {
     return match location_word.parse::<i32>() {
         Err(e) => panic!("Can't parse the location {}: {}", location_word, e),
         Ok(location_id) => location_id,
